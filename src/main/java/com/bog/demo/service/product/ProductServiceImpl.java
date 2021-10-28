@@ -2,6 +2,7 @@ package com.bog.demo.service.product;
 
 import com.bog.demo.domain.file.File;
 import com.bog.demo.domain.product.Product;
+import com.bog.demo.facade.AuthenticationFacade;
 import com.bog.demo.mapper.product.ProductMapper;
 import com.bog.demo.model.product.ProductDto;
 import com.bog.demo.model.product.ProductSearchRequestDto;
@@ -33,6 +34,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
 
     private ProductRepository productRepository;
+
+    private AuthenticationFacade authenticationFacade;
 
     @Override
     public ProductSearchResponseDto searchProducts(ProductSearchRequestDto productSearchRequestDto) {
@@ -80,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
     public Descriptor saveProduct(ProductDto productDto) {
         Product product = productMapper.mapToEntity(productDto);
         product.setState(1);
+        product.setUserId(authenticationFacade.getUser().getId());
         productRepository.save(product);
 
         return Descriptor.validDescriptor();
@@ -89,10 +93,21 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public Descriptor updateProduct(ProductDto productDto) {
         Product product = productRepository.findById(productDto.getId()).get();
+
+        Integer userId = authenticationFacade.getUser().getId();
+        if (!userId.equals(product.getUserId())) {
+            return Descriptor.invalidDescriptor("NOT_PRODUCT_OWNER");
+        }
+
         product.setName(productDto.getName());
         product.setPrice(productDto.getPrice());
         product.setQuantity(productDto.getQuantity());
-        product.setFile(new File(productDto.getFileId()));
+        if (productDto.getFileId() != null) {
+            product.setFile(new File(productDto.getFileId()));
+        } else {
+            product.setFile(null);
+        }
+
         productRepository.save(product);
 
         return Descriptor.validDescriptor();
@@ -107,5 +122,10 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     public void setProductRepository(ProductRepository productRepository) {
         this.productRepository = productRepository;
+    }
+
+    @Autowired
+    public void setAuthenticationFacade(AuthenticationFacade authenticationFacade) {
+        this.authenticationFacade = authenticationFacade;
     }
 }

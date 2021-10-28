@@ -32,4 +32,7 @@ public class Product {
 
     @Column(name = "state")
     private Integer state;
+
+    @Column(name = "user_id")
+    private Integer userId;
 }

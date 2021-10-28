@@ -13,10 +13,15 @@ public class ProductMapper {
 
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
-        product.setFile(new File(dto.getFileId()));
+        if (dto.getFileId() != null) {
+            product.setFile(new File(dto.getFileId()));
+        } else {
+            product.setFile(null);
+        }
         product.setQuantity(dto.getQuantity());
         product.setId(dto.getId());
         product.setState(dto.getState());
+        product.setUserId(dto.getUserId());
 
         return product;
     }
@@ -31,6 +36,7 @@ public class ProductMapper {
         dto.setName(product.getName());
         dto.setQuantity(product.getQuantity());
         dto.setFile(product.getFile());
+        dto.setUserId(product.getUserId());
 
         return dto;
     }

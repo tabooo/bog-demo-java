@@ -13,4 +13,5 @@ public class ProductDto {
     private Double price;
     private Double quantity;
     private Integer state;
+    private Integer userId;
 }
