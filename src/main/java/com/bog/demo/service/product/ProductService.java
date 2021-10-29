@@ -1,5 +1,6 @@
 package com.bog.demo.service.product;
 
+import com.bog.demo.model.product.BuyProductDto;
 import com.bog.demo.model.product.ProductDto;
 import com.bog.demo.model.product.ProductSearchRequestDto;
 import com.bog.demo.model.product.ProductSearchResponseDto;
@@ -11,4 +12,6 @@ public interface ProductService {
     Descriptor saveProduct(ProductDto productDto);
 
     Descriptor updateProduct(ProductDto productDto);
+
+    Descriptor buyProduct(BuyProductDto buyProductDto);
 }

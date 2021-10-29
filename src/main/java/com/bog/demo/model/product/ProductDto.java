@@ -11,7 +11,7 @@ public class ProductDto {
     private File file;
     private String name;
     private Double price;
-    private Double quantity;
+    private Integer quantity;
     private Integer state;
     private Integer userId;
 }

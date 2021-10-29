@@ -36,4 +36,7 @@ public class User {
 
     @Column(name = "state")
     private Integer state;
+
+    @Column(name = "balance")
+    private Double balance;
 }

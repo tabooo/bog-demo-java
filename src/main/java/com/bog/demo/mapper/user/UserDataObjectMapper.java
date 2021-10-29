@@ -33,6 +33,7 @@ public class UserDataObjectMapper {
         user.setAccountNumber(dto.getAccountNumber());
         user.setEnabled(dto.getEnabled());
         user.setState(dto.getState());
+        user.setBalance(dto.getBalance());
 
         return user;
     }

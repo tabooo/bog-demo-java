@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
         user.setLastName(userDto.getLastName());
         user.setState(1);
         user.setEnabled(0);
+        user.setBalance(0.0);
 
         userRepository.save(user);
 

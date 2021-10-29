@@ -51,6 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/rest/api/auth/check-verification",
                         "/rest/api/auth/set-password",
                         "/rest/api/product/search",
+                        "/rest/api/product/buy-product",
                         "/rest/api/short/**").permitAll()
                 .antMatchers("/rest/api/**")
                 .authenticated()

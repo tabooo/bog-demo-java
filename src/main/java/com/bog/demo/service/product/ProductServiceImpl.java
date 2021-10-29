@@ -2,12 +2,18 @@ package com.bog.demo.service.product;
 
 import com.bog.demo.domain.file.File;
 import com.bog.demo.domain.product.Product;
+import com.bog.demo.domain.product.Sell;
+import com.bog.demo.domain.user.User;
 import com.bog.demo.facade.AuthenticationFacade;
 import com.bog.demo.mapper.product.ProductMapper;
+import com.bog.demo.model.product.BuyProductDto;
 import com.bog.demo.model.product.ProductDto;
 import com.bog.demo.model.product.ProductSearchRequestDto;
 import com.bog.demo.model.product.ProductSearchResponseDto;
+import com.bog.demo.model.user.UserDto;
 import com.bog.demo.repository.product.ProductRepository;
+import com.bog.demo.repository.sell.SellRepository;
+import com.bog.demo.repository.user.UserRepository;
 import com.bog.demo.util.Descriptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,6 +37,10 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
 
     private ProductRepository productRepository;
+
+    private SellRepository sellRepository;
+
+    private UserRepository userRepository;
 
     private AuthenticationFacade authenticationFacade;
 
@@ -113,6 +120,43 @@ public class ProductServiceImpl implements ProductService {
         return Descriptor.validDescriptor();
     }
 
+    @Override
+    @Transactional
+    public Descriptor buyProduct(BuyProductDto buyProductDto) {
+        Product product = productRepository.findById(buyProductDto.getProductId()).get();
+        if (product.getQuantity() < buyProductDto.getQuantity()) {
+            return Descriptor.invalidDescriptor("NOT_ENOUGH_AMOUNT");
+        }
+
+        product.setQuantity(product.getQuantity() - buyProductDto.getQuantity());
+
+        UserDto authUser = authenticationFacade.getUser();
+        Integer userId = null;
+        if (authUser != null) {
+            userId = authUser.getId();
+        }
+
+        Sell sell = new Sell();
+        sell.setProductId(buyProductDto.getProductId());
+        sell.setQuantity(buyProductDto.getQuantity());
+        sell.setOnePrice(product.getPrice());
+        sell.setCost(buyProductDto.getQuantity() * product.getPrice());
+        sell.setCardInfo(buyProductDto.getCardInfo());
+        sell.setState(1);
+        sell.setCreateDate(new Date());
+        sell.setBuyerUserId(userId);
+        sell.setSellerUserId(product.getUserId());
+
+        User user = userRepository.findById(product.getUserId()).get();
+        user.setBalance(user.getBalance() + sell.getCost() * 0.1);
+
+        sellRepository.save(sell);
+        productRepository.save(product);
+        userRepository.save(user);
+
+        return Descriptor.validDescriptor();
+    }
+
 
     @Autowired
     public void setProductMapper(ProductMapper productMapper) {
@@ -127,5 +171,15 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     public void setAuthenticationFacade(AuthenticationFacade authenticationFacade) {
         this.authenticationFacade = authenticationFacade;
+    }
+
+    @Autowired
+    public void setSellRepository(SellRepository sellRepository) {
+        this.sellRepository = sellRepository;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }

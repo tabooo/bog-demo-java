@@ -1,5 +1,6 @@
 package com.bog.demo.controller;
 
+import com.bog.demo.model.product.BuyProductDto;
 import com.bog.demo.model.product.ProductDto;
 import com.bog.demo.model.product.ProductSearchRequestDto;
 import com.bog.demo.model.product.ProductSearchResponseDto;
@@ -31,6 +32,12 @@ public class ProductController {
     public ResponseEntity<Descriptor> updateUser(@Valid @RequestBody ProductDto productDto) {
 
         return new ResponseEntity<>(productService.updateProduct(productDto), HttpStatus.OK);
+    }
+
+    @PostMapping("buy-product")
+    public ResponseEntity<Descriptor> buyProduct(@Valid @RequestBody BuyProductDto buyProductDto) {
+
+        return new ResponseEntity<>(productService.buyProduct(buyProductDto), HttpStatus.OK);
     }
 
     @Autowired

@@ -28,7 +28,7 @@ public class Product {
     private Double price;
 
     @Column(name = "quantity")
-    private Double quantity;
+    private Integer quantity;
 
     @Column(name = "state")
     private Integer state;

@@ -30,4 +30,5 @@ public class UserDto {
 
     private Integer enabled;
     private Integer state;
+    private Double balance;
 }
