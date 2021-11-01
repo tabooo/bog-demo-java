@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserVerificationRepository extends CrudRepository<UserVerification, Integer> {
-    UserVerification findByKey(String key);
+    UserVerification findByKeyAndState(String key, Integer state);
 }

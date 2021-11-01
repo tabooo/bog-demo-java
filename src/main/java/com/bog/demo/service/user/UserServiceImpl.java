@@ -8,6 +8,7 @@ import com.bog.demo.repository.shortlinks.ShortLinkRepository;
 import com.bog.demo.repository.user.UserRepository;
 import com.bog.demo.repository.user.UserVerificationRepository;
 import com.bog.demo.util.Descriptor;
+import com.bog.demo.util.ShortURLGenerator;
 import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +56,15 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         ShortLink shortLink = new ShortLink();
-        String key = UUID.randomUUID().toString();
-        shortLink.setKey(key);
+        shortLink.setKey("");
+        shortLink.setUrl("");
         shortLink.setState(1);
         shortLink.setCreateDate(new Date());
-        shortLink.setUrl("http://localhost:4200/#/confirm/" + shortLink.getKey());
+        shortLinkRepository.save(shortLink);
+
+        String key = ShortURLGenerator.idToShortURL(shortLink.getId());
+        shortLink.setKey(key);
+        shortLink.setUrl("http://localhost:4200/#/confirm/" + key);
 
         shortLinkRepository.save(shortLink);
 
@@ -90,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public Descriptor setPassword(String password, String key) {
-        UserVerification userVerification = userVerificationRepository.findByKey(key);
+        UserVerification userVerification = userVerificationRepository.findByKeyAndState(key, 1);
         Date now = new Date();
         if (userVerification == null || userVerification.getExpireDate().getTime() < now.getTime()) {
             return Descriptor.invalidDescriptor("EXPIRED");
@@ -101,11 +106,14 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
+        userVerification.setState(2);
+        userVerificationRepository.save(userVerification);
+
         return Descriptor.validDescriptor();
     }
 
     public UserVerification checkVerification(String key) {
-        UserVerification userVerification = userVerificationRepository.findByKey(key);
+        UserVerification userVerification = userVerificationRepository.findByKeyAndState(key, 1);
         return userVerification;
     }
 
