@@ -15,5 +15,3 @@ alter table products
 create unique index products_id_uindex
     on products (id);
 
-INSERT INTO demo_bog.products (id, file_id, price, quantity, state, name, user_id) VALUES (2, 4, 2.00, 0, 1, 'asda1', 11);
-INSERT INTO demo_bog.products (id, file_id, price, quantity, state, name, user_id) VALUES (1, null, 2.00, 0, 1, 'test', 11);

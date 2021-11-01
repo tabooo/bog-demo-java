@@ -18,4 +18,3 @@ alter table users
 create unique index users_id_uindex
     on users (id);
 
-INSERT INTO demo_bog.users (id, email, first_name, last_name, account_number, password, state, enabled, personal_no, balance) VALUES (11, 'tabagari89@gmail.com', 'a', 'a', 'a', '123', 1, 1, null, 0.40);
